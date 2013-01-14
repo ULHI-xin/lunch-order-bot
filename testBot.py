@@ -8,7 +8,7 @@ import json
 import logging
 import re
 import threading
-import time 
+import time
 import urllib2
 try:
     import xmpp
@@ -31,6 +31,7 @@ current_status = {
     'latest_working_jsid': "E12D94968C63A09D354C294460F641B7",
 }
 
+#
 users = {
 }
 
@@ -68,7 +69,7 @@ class SystemInfoJabberBot(JabberBot):
     def whoami(self, mess, args):
         """Tells you your username"""
         return mess.getFrom().getStripped()
-    
+
     @botcmd
     def _res(self, mess, args):
     	'''Get today's restaurant info and recommanded menu.'''
@@ -79,7 +80,7 @@ class SystemInfoJabberBot(JabberBot):
         print main_courses_string
         return "%s\n %s" % (self._get_restaurant_info_in_queue(0),\
             main_courses_string)
-    
+
     @botcmd
     def _menu(self, mess, args):
     	'''Get today's recommanded menu.'''
@@ -93,7 +94,7 @@ class SystemInfoJabberBot(JabberBot):
     @botcmd
     def _repick(self, mess, args):
         print "_repick activated"
-        
+
         jid = mess.getFrom().getStripped()
         #if jid not in users:
         #    return "Sorry. You are not in the upwlabs lunch group. Ask someone in that group to order for you."
@@ -106,7 +107,7 @@ class SystemInfoJabberBot(JabberBot):
                 self._do_repick(mess, args)
             else:
                 return "Repick submitted. Current repick: %d/6." % len(current_status['repick_user'])
-    
+
     @botcmd(hidden=True)
     def _do_repick(self, mess, args):
         queue = self._get_queue()
@@ -135,7 +136,7 @@ class SystemInfoJabberBot(JabberBot):
         print "_order activated"
         print args
 
-        to_append = True 
+        to_append = True
         ordered_item = ""
         jid = mess.getFrom().getStripped()
         for a in args:
@@ -148,7 +149,7 @@ class SystemInfoJabberBot(JabberBot):
             current_status['ordered_user'].setdefault(jid, u"")
             current_status['ordered_user'][jid] = current_status['ordered_user'][jid] + u"\n" + ordered_item
         else:
-            current_status['ordered_user'][jid] = ordered_item 
+            current_status['ordered_user'][jid] = ordered_item
 
         return "%s ordered." % current_status['ordered_user'][jid]
 
@@ -165,7 +166,7 @@ class SystemInfoJabberBot(JabberBot):
 
         return reply_message
 
-       
+
     @botcmd(hidden=True)
     def broadcast( self, mess, args):
         """Sends out a broadcast, supply message as arguments (e.g. broadcast hello)"""
