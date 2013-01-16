@@ -133,8 +133,9 @@ class SystemInfoJabberBot(JabberBot):
 
     @botcmd
     def _order(self, mess, args):
+        '''Order the item in the menu.'''
         print "_order activated"
-        print args
+        #print args
 
         to_append = True
         ordered_item = ""
