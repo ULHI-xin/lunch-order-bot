@@ -86,7 +86,7 @@ class SystemInfoJabberBot(JabberBot):
     	'''Get today's recommanded menu.'''
         print "_menu activated"
         queue = self._get_queue()
-        main_course_dict = self._get_main_course()
+        main_course_dict = self._get_main_course() 
         main_courses_string = "\n".join(main_course_dict[queue[0][1]])
         print main_courses_string
         return main_courses_string
@@ -127,7 +127,14 @@ class SystemInfoJabberBot(JabberBot):
 
         queue = self._get_queue()
         full_menu = json.loads(open("sherpa_menu/%s.json" % queue[0][1]).read())['menu']
-        full_menu_string = "\n".join(["%s %s%s" % (m['name'], m['price'], m['remark'] and ("(%s)" % m['remark']) or "") for m in full_menu.values()])
+        full_menu_string = ""
+        for m in full_menu.values():
+            full_menu_string += "\n%s %s%s" % (m['name'], m['price'], m['remark'] and ("(%s)" % m['remark']) or "")
+            if m.has_key('opts'):
+                for o in m['opts']:
+                    full_menu_string += "\n  %s" % o['name']
+                    for d in o['details']:
+                        full_menu_string += "\n   |-%s" % d
 
         return full_menu_string
 
