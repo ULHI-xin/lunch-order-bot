@@ -201,8 +201,13 @@ class SystemInfoJabberBot(JabberBot):
         self.message_queue = []
 
         for message in messages:
-            if len(users):
-                self.log.info('sending "%s" to %d user(s).' % ( message, len(users), ))
+            if isinstance(message, basestring):
+                subscribed_users = users
+            else:
+                subscribed_users = [u for u in users if message[1](u)]
+                message = message[0]
+
+            self.log.info('sending "%s" to %d user(s).' % ( message, len(subscribed_users), ))
             for user in users:
                 self.send(xmpp.JID(user), message)
 
@@ -210,8 +215,8 @@ class SystemInfoJabberBot(JabberBot):
         self._init(None, None)
         while not self.thread_killed:
             local_time = time.localtime()
-            if 3 == local_time.tm_hour and local_time.tm_min% 15 in [0, 1]:
-                self.message_queue.append("It's time for ordering. Type _res to see today's restaurant and menu!")
+            if 11 == local_time.tm_hour and local_time.tm_min % 15 in [0, 1]:
+                self.message_queue.append(("It's time for ordering. Type _res to see today's restaurant and menu!", lambda x: x not in current_status['ordered_user']))
             for i in range(60 * 2):
                 time.sleep(1)
                 if self.thread_killed:
