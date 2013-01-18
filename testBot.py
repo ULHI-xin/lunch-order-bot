@@ -43,7 +43,7 @@ class SystemInfoJabberBot(JabberBot):
         chandler = logging.StreamHandler()
         # create formatter
         formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-        # add formatter to handler
+
         chandler.setFormatter(formatter)
         # add handler to logger
         self.log.addHandler(chandler)
@@ -174,6 +174,16 @@ class SystemInfoJabberBot(JabberBot):
 
         return reply_message
 
+    @botcmd(hidden=True)
+    def _init(self, mess, args):
+        '''Initiate operations'''
+        print "_init activated"
+
+        current_status['ordered_user'] = {}
+        current_status['repick_user'] = {}
+        queue = self._get_queue()
+        current_status['queue'] = queue[1:] + [queue[0]]
+        self._store_queue()
 
     @botcmd(hidden=True)
     def broadcast( self, mess, args):
@@ -197,6 +207,7 @@ class SystemInfoJabberBot(JabberBot):
                 self.send(xmpp.JID(user), message)
 
     def thread_proc( self):
+        self._init(None, None)
         while not self.thread_killed:
             local_time = time.localtime()
             if 3 == local_time.tm_hour and local_time.tm_min% 15 in [0, 1]:
@@ -251,6 +262,7 @@ if __name__ == '__main__':
         """ % sys.argv[0]
 
     username, password = sys.argv[1:]
+
 bot = SystemInfoJabberBot(username,password, server="talk.google.com", port=5223)
 th = threading.Thread( target = bot.thread_proc)
 bot.serve_forever( connect_callback = lambda: th.start())
