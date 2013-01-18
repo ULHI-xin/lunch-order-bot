@@ -1,0 +1,2 @@
+#Ignore the restaurants.json in sherpa_menu/ which will change after _repick. To maintein it manually
+sherpa_menu/restaurants.json
