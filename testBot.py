@@ -174,6 +174,29 @@ class SystemInfoJabberBot(JabberBot):
 
         return reply_message
 
+    @botcmd
+    def _god_pick(self, mess, args):
+        print "_god_pick activated"
+
+        search_key = "".join(args)
+        result = self._search_from_queue(search_key)
+        if 1 == len(result):
+            result_idx = result[0]
+            queue = self._get_queue()
+            current_status['queue'] = [queue[result_idx]] + queue[:result_idx] + queue[result_idx + 1:]
+
+            self._store_queue()
+            self.message_queue.append("Now restaurant changed to [%s].\nType _res to get the infomation of the new restaurant." %\
+                self._get_restaurant_info_in_queue(0))
+            return "God pick succeeded."
+        elif 0 == len(result):
+            return "Wrong search key."
+        else:
+            reply_message = "Multi results retrieved. Give more accurate name:\n"
+            for idx in result:
+                reply_message += (self._get_restaurant_info_in_queue(idx) + "\n")
+            return reply_message
+
     @botcmd(hidden=True)
     def _init(self, mess, args):
         '''Initiate operations'''
@@ -259,6 +282,14 @@ class SystemInfoJabberBot(JabberBot):
         f = open("sherpa_menu/restaurants.json", 'w')
         f.write(json.dumps({'queue': queue, 'all_res_info': current_status['all_res_info']}))
         f.close()
+
+    def _search_from_queue(self, search_key):
+        result = []
+        queue = self._get_queue()
+        for idx, q in enumerate(queue):
+            if search_key.lower() in q[0].lower():
+                result.append(idx)
+        return result
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
